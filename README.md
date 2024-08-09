@@ -14,6 +14,14 @@ E-Commerce Web Application
 8) Remove Items or Update From the Cart
 9) Shipping Address From
 10) Payment methos Integration with UPI , Debit cards, Credit card and Banking method 
+11) Tracking Order Status
 
+
+
+*) django Rest API Overview with POSTMAN
+*) Deploying rhe Web App in real time server (if possible)
+*) DNS Hosting with VPS servers with Apache2/nginx
+*) adding SSl Certificates to Our site
+*) Connecting Our site with Domain Names which are from domain  buyers (if possible)
 
 
