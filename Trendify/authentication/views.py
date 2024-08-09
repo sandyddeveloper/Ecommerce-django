@@ -29,7 +29,7 @@ def signup(request):
         myuser.last_name = lastName
         myuser.save()
         messages.success(request, "Account created successfully")
-        return redirect('/auth/login')  # Make sure this URL matches your URL patterns
+        return redirect('/auth/login')  
     
     return render(request, 'auth/signup.html')
 def handlelogin (request):
