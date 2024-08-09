@@ -39,9 +39,13 @@ def handlelogin(request):
         if myuser is not None:
             login(request, myuser)
             messages.success(request, "Login successful")
-            return render(request,'index.html')  
+            return render(request,'dashboard.html')  
         else:
             messages.warning(request, "Invalid credentials")
             return redirect('/auth/login')  
     
     return render(request, 'auth/Login.html')
+
+
+def dashboard(request):
+    return render(request,'dashboard.html')
