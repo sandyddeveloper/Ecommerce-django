@@ -1,30 +1,26 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth import authenticate, login
 from django.contrib import messages
 
-
-# Create your views here.
 def signup(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        firstName = request.POST.get('firstName')
-        lastName = request.POST.get('lastName')
-        password = request.POST.get('password')
-        email = request.POST.get('email')
-        confirmPassword = request.POST.get('confirmPassword')
+        firstName = request.POST['firstName']
+        lastName = request.POST['lastName']
+        password = request.POST['password']
+        email = request.POST['email']
+        confirmPassword = request.POST['confirmPassword']
         
         if password != confirmPassword:
             messages.warning(request, "Passwords do not match")
             return render(request, 'auth/signup.html')
         try:
-            if User.objects.get(email=email):
+            if User.objects.filter(username=email):
                 messages.warning(request, "User already exists")
                 return render(request, 'auth/signup.html')
-        except User.DoesNotExist:
+        except Exception as identifier:
             pass
-        
-        myuser = User.objects.create_user(username, email, password)
+        myuser = User.objects.create_user( email, email, password)
         myuser.first_name = firstName
         myuser.last_name = lastName
         myuser.save()
@@ -32,5 +28,21 @@ def signup(request):
         return redirect('/auth/login')  
     
     return render(request, 'auth/signup.html')
-def handlelogin (request):
-    return render(request, 'auth/login.html')
+
+def handlelogin(request):
+    if request.method == 'POST':
+        username = request.POST['email']
+        userpassword = request.POST['password']
+        
+        # Authenticate using username; if using email, ensure your authentication backend supports it
+        myuser = authenticate(username=username, password=userpassword)
+        
+        if myuser is not None:
+            login(request, myuser)
+            messages.success(request, "Login successful")
+            return render(request,'index.html')  # Redirect to a named URL
+        else:
+            messages.warning(request, "Invalid credentials")
+            return redirect('/auth/login')  # Redirect to a named URL
+    
+    return render(request, 'auth/Login.html')
