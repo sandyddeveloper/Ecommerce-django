@@ -34,15 +34,14 @@ def handlelogin(request):
         username = request.POST['email']
         userpassword = request.POST['password']
         
-        # Authenticate using username; if using email, ensure your authentication backend supports it
         myuser = authenticate(username=username, password=userpassword)
         
         if myuser is not None:
             login(request, myuser)
             messages.success(request, "Login successful")
-            return render(request,'index.html')  # Redirect to a named URL
+            return render(request,'index.html')  
         else:
             messages.warning(request, "Invalid credentials")
-            return redirect('/auth/login')  # Redirect to a named URL
+            return redirect('/auth/login')  
     
     return render(request, 'auth/Login.html')
