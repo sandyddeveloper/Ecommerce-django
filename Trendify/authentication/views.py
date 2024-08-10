@@ -89,34 +89,20 @@
 
 # def dashboard(request):
 #     return render(request,'dashboard.html')
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.urls import reverse
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, DjangoUnicodeDecodeError
-
-from .utils import TokenGenerator  
-
+from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from django.conf import settings
+from .utils import token_generator, EmailThread
 
-import threading
-
-class EmailThread(threading.Thread):
-    def __init__(self, email_message):
-        self.email_message = email_message
-        threading.Thread.__init__(self)
-
-    def run(self):
-        self.email_message.send()
-
-token_generator = TokenGenerator()  
 
 def signup(request):
     if request.method == 'POST':
@@ -137,11 +123,12 @@ def signup(request):
         myuser = User.objects.create_user(email, email, password)
         myuser.first_name = firstName
         myuser.last_name = lastName
+        myuser.is_active = False  # Deactivate account until it is confirmed
         myuser.save()
         
         current_site = get_current_site(request)
         email_subject = "Activate Your Account"
-        message = render_to_string('auth/activate.html', {
+        message = render_to_string('Auth/activate.html', {
             'user': myuser,
             'domain': current_site.domain,
             'uid': urlsafe_base64_encode(force_bytes(myuser.pk)),
@@ -152,10 +139,29 @@ def signup(request):
             email_subject, message, settings.EMAIL_HOST_USER, [email]
         )
         EmailThread(email_message).start()
-        messages.info(request, "Activate Your Account By Clicking The Link Sent To Your Email") 
+        messages.info(request, "Activate your account by clicking the link sent to your email.") 
         return redirect('/auth/login')  
     
     return render(request, 'auth/signup.html')
+
+
+class ActivateAccountView(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        
+        if user is not None and token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            messages.success(request, "Your account has been activated. You can now login.")
+            return redirect('/auth/login')
+        else:
+            messages.error(request, "Activation link is invalid!")
+            return render(request, 'Auth/activatefail.html')
+
 
 def handlelogin(request):
     if request.method == 'POST':
@@ -167,17 +173,19 @@ def handlelogin(request):
         if myuser is not None:
             login(request, myuser)
             messages.success(request, "Login successful")
-            return redirect('dashboard.html')  # Use the named URL
+            return redirect('dashboard')  # Redirect to the dashboard
         else:
             messages.warning(request, "Invalid credentials")
             return redirect('/auth/login')  
     
     return render(request, 'auth/login.html')
 
+
 def handlelogout(request):
     logout(request)
     messages.success(request, "Logged out successfully")
     return redirect('/auth/login')
+
 
 def dashboard(request):
     return render(request, 'dashboard.html')
