@@ -1,5 +1,6 @@
 from django.urls import path
 from .import views 
+from .views import SetNewPasswordView
 
 urlpatterns = [
     
@@ -9,4 +10,5 @@ urlpatterns = [
     path('dashboard/',views.dashboard,name='dashboard'),
     path('activate/<uidb64>/<token>',views.ActivateAccountView.as_view(),name='activate'),
     path('request-reset-email/',views.RequestResetEmailView.as_view(),name='request-reset-email'),
+    path('set-new-password/<uidb64>/<token>/',SetNewPasswordView.as_view(), name='set-new-password'),
 ]
