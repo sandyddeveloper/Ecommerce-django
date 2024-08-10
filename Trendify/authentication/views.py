@@ -101,7 +101,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, DjangoUnicodeDecodeError
 
-from .utils import TokenGenerator  # Ensure this is imported correctly
+from .utils import TokenGenerator  
 
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -116,7 +116,7 @@ class EmailThread(threading.Thread):
     def run(self):
         self.email_message.send()
 
-token_generator = TokenGenerator()  # Ensure you have created an instance
+token_generator = TokenGenerator()  
 
 def signup(request):
     if request.method == 'POST':
