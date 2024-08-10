@@ -100,10 +100,13 @@ def dashboard(request):
     return render(request, 'dashboard.html')
 
 
-
-
-
-
+class RequestResetEmailView(View):
+    def post(self, request):
+        return render(request, 'Auth/request-reset-email.html')
+        
+        
+    def get(self, request):
+         return render(request, 'Auth/request-reset-email.html')
 
 
 
