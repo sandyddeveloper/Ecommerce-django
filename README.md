@@ -1,7 +1,7 @@
 # Ecommerce-django
 full stack with react and django
 
-port no 5432
+
 
 E-Commerce Web Application
 
