@@ -21,74 +21,7 @@
 # #to send the "TO" address and from for mailing for users
 # from django.conf import settings
 
-# #to generate tokens for user 
 
-
-
-
-
-# def signup(request):
-#     if request.method == 'POST':
-#         firstName = request.POST['firstName']
-#         lastName = request.POST['lastName']
-#         password = request.POST['password']
-#         email = request.POST['email']
-#         confirmPassword = request.POST['confirmPassword']
-        
-#         if password != confirmPassword:
-#             messages.warning(request, "Passwords do not match")
-#             return render(request, 'auth/signup.html')
-#         try:
-#             if User.objects.filter(username=email):
-#                 messages.warning(request, "User already exists")
-#                 return render(request, 'auth/signup.html')
-#         except Exception as identifier:
-#             pass
-#         myuser = User.objects.create_user( email, email, password)
-#         myuser.first_name = firstName
-#         myuser.last_name = lastName
-#         myuser.save()
-#         current_site = get_current_site(request)
-#         email_subject = "Activate Your Account"
-#         message=render_to_string('auth/activate.html', {
-#             'user': myuser,
-#             'domain':"127.0.0.1:8000" ,
-#             'uid': urlsafe_base64_encode(force_bytes(myuser.pk)),
-#             'token': token_generator.make_token(myuser),
-#         })
-        
-#         email_message = EmailMessage(email_subject, message.settings.EMAIL_HOST_USER, [email],)
-#         EmailThread(email_message).start()
-#         messages.info(request, "Activate Your Account By Clicking This Link On Your Email") 
-#         return redirect('/auth/login')  
-    
-#     return render(request, 'auth/signup.html')
-
-# def handlelogin(request):
-#     if request.method == 'POST':
-#         username = request.POST['email']
-#         userpassword = request.POST['password']
-        
-#         myuser = authenticate(username=username, password=userpassword)
-        
-#         if myuser is not None:
-#             login(request, myuser)
-#             messages.success(request, "Login successful")
-#             return render(request,'dashboard.html')  
-#         else:
-#             messages.warning(request, "Invalid credentials")
-#             return redirect('/auth/login')  
-    
-#     return render(request, 'auth/Login.html')
-
-
-# def handlelogout(request):
-#     logout(request)
-#     messages.success(request, "Logged out successfully")
-#     return redirect('/auth/login')
-
-# def dashboard(request):
-#     return render(request,'dashboard.html')
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.views.generic import View
