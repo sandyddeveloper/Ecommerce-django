@@ -207,3 +207,7 @@
   document.addEventListener('scroll', navmenuScrollspy);
 
 })();
+
+// AOS.init({
+//   duration: 1000,
+// });

@@ -1,3 +1,4 @@
 django
 six
 threading
+pillow

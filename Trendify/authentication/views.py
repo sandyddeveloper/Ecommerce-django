@@ -12,6 +12,9 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from .utils import token_generator, EmailThread
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from .models import Product
+from math import ceil
+
 
 def signup(request):
     if request.method == 'POST':
@@ -97,7 +100,19 @@ def handlelogout(request):
 
 
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    current_user = request.user
+    print(current_user)
+    allProds = []
+    catprods = Product.objects.values('category', 'id')
+    cats = {item['category'] for item in catprods}
+    for cat in cats:
+        prod = Product.objects.filter(category=cat)
+        n=len(prod)
+        nSlides = n // 4 + ceil((n / 4 ) - (n // 4))
+        allProds.append([prod, range(1, nSlides), nSlides])
+        
+    params = {'allProds':allProds}
+    return render(request, 'dashboard.html',params)
 
 
 class RequestResetEmailView(View):
