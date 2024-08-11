@@ -168,7 +168,6 @@ class SetNewPasswordView(View):
             messages.error(request, "Something Went Wrong")
             return render(request,'Auth/set-new-password.html', context)
         
-        return render(request,'Auth/set-new-password.html',context)  
            
 
 
