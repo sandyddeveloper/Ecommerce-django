@@ -101,30 +101,32 @@ def dashboard(request):
 
 
 class RequestResetEmailView(View):
+    def get(self, request):
+            return render(request, 'Auth/request-reset-email.html')
+
     def post(self, request):
         email = request.POST['email']
         user = User.objects.filter(email=email)
         
         if user.exists():
             current_site = get_current_site(request)
-            email_subject = "Reset Your Password"
-            message = render_to_string('Auth/reset-user-password.html', {
-            'domain': current_site.domain,
-            'uid': urlsafe_base64_encode(force_bytes(user[0].pk)),
-            'token': PasswordResetTokenGenerator().make_token(user[0])
-        })    
+            email_subject = '[Reset Your Password]'
+            message = render_to_string('Auth/reset-user-password.html',
+            {
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user[0].pk)),
+                'token': PasswordResetTokenGenerator().make_token(user[0])
+            })    
         
-        email_message = EmailMessage(email_subject,message,settings.EMAIL_HOST_USER,[email])
-        EmailThread(email_message).start()
-        
-        messages.info(request,"We Have Sent You An Email With Instructions on How to Rest the Password")
-        return render(request, 'Auth/reset-user-password.html')
-    def get(self, request):
-         return render(request, 'Auth/request-reset-email.html')
+            email_message = EmailMessage(email_subject,message,settings.EMAIL_HOST_USER,[email])
+            EmailThread(email_message).start()
+            
+            messages.info(request,"We Have Sent You An Email With Instructions on How to Rest the Password")
+            return render(request, 'Auth/request-reset-email.html')
 
 
 class SetNewPasswordView(View):
-    def get(self, request, uidb64, token):
+    def get(self, request, uidb64, token ):
         context ={
             'uidb64': uidb64,
             'token': token
@@ -133,7 +135,7 @@ class SetNewPasswordView(View):
             user_id = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=user_id)
             
-            if  not PasswordResetTokenGenerator().check_token(user,token):
+            if not PasswordResetTokenGenerator().check_token(user,token):
                 messages.warning(request,"Password Reset Link in Invalid")
                 return render(request,'Auth/request-reset-email.html')
             
@@ -160,12 +162,13 @@ class SetNewPasswordView(View):
             user.set_password(password)
             user.save()
             messages.success(request, "Password successfully reset. Please log in with the new password")
-            return redirect('auth/login/')
+            return redirect('/auth/login')
         
         except DjangoUnicodeDecodeError as identifier:
             messages.error(request, "Something Went Wrong")
             return render(request,'Auth/set-new-password.html', context)
         
+        return render(request,'Auth/set-new-password.html',context)  
            
 
 
