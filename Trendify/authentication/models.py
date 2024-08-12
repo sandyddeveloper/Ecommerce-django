@@ -1,60 +1,48 @@
 from django.db import models
 import datetime
 # Create your models here.
-class Product(models.Model):
-    product_id = models.AutoField
-    product_name = models.CharField(max_length=100)
-    category = models.CharField(max_length=100, default="")
-    subcategory = models.CharField(max_length=100, default="")
-    price = models.IntegerField(default=0)
-    desc = models.CharField(max_length=300)
-    pub_date = models.DateField()
-    image = models.ImageField(upload_to='shop/images', default="")
+
+class Customer(models.Model):
+    first_name =models.CharField(max_length=100)
+    last_name =models.CharField(max_length=100)
+    phone =models.CharField(max_length=10)
+    email =models.EmailField(max_length=100)
+    password = models.CharField(max_length=100)
     
     def __str__(self):
-        return self.product_name 
+        return f'{self.first_name} {self.last_name}'
+    
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.name
+    
+    
+#All of our Products
 
-# class Customer(models.Model):
-#     first_name =models.CharField(max_length=100)
-#     last_name =models.CharField(max_length=100)
-#     phone =models.CharField(max_length=10)
-#     email =models.EmailField(max_length=100)
-#     password = models.CharField(max_length=100)
+class Product(models.Model):
+    id =models.AutoField
+    name = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
+    description = models.CharField(max_length=300, default='', blank=True, null=True)
+    pub_date = models.DateField()
+    image = models.ImageField(upload_to='shop/images/', default="")
     
-#     def __str__(self):
-#         return f'{self.first_name} {self.last_name}'
+    def __str__(self):
+        return self.name
     
-# class Category(models.Model):
-#     name = models.CharField(max_length=100)
+    #Customer Order Details
+class Order(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    Customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    address = models.CharField(max_length=100, default='', blank=True)
+    phone = models.CharField(max_length=20, default="", blank=True)
+    date =  models.DateField(default=datetime.datetime.today)
+    status = models.BooleanField(default=False)
     
-#     def __str__(self):
-#         return self.name
-    
-    
-# #All of our Products
-
-# class Product(models.Model):
-#     id =models.AutoField
-#     name = models.CharField(max_length=200)
-#     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-#     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
-#     description = models.CharField(max_length=300, default='', blank=True, null=True)
-#     pub_date = models.DateField()
-#     image = models.ImageField(upload_to='shop/images/', default="")
-    
-#     def __str__(self):
-#         return self.name
-    
-#     #Customer Order Details
-# class Order(models.Model):
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-#     Customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-#     quantity = models.IntegerField(default=1)
-#     address = models.CharField(max_length=100, default='', blank=True)
-#     phone = models.CharField(max_length=20, default="", blank=True)
-#     date =  models.DateField(default=datetime.datetime.today)
-#     status = models.BooleanField(default=False)
-    
-#     def __str__(self):
-#         return self.product
+    def __str__(self):
+        return self.product
     
