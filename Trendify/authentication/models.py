@@ -23,7 +23,7 @@ class Category(models.Model):
 
 class Product(models.Model):
     id =models.AutoField
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, default=None)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
     description = models.CharField(max_length=300, default='', blank=True, null=True)
