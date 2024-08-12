@@ -2,3 +2,5 @@ django
 six
 threading
 pillow
+pycryptodome
+5:15:05

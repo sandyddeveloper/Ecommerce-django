@@ -14,7 +14,7 @@ from .utils import token_generator, EmailThread
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from .models import Product
 from math import ceil
-
+from authentication import keys
 
 def signup(request):
     if request.method == 'POST':
@@ -96,7 +96,7 @@ def handlelogin(request):
 def handlelogout(request):
     logout(request)
     messages.success(request, "Logged out successfully")
-    return redirect('/auth/login')
+    return redirect('/')
 
 
 def dashboard(request):

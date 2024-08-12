@@ -5,50 +5,29 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>{% block title %}Tredify-Dashboard{% endblock title %}</title>
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
 
     <!-- Favicons -->
     <link href="https://te.legra.ph/file/78bfa2b669a9bcb327afc.jpg" rel="icon" />
-    <link
-      href="{% static 'assets/img/apple-touch-icon.png' %}"
-      rel="apple-touch-icon"
-    />
+    <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon" />
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
     <!-- Vendor CSS Files -->
-    <link
-      href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}"
-      rel="stylesheet"
-    />
-    <link
-      href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}"
-      rel="stylesheet"
-    />
+    <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet" />
     <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet" />
-    <link
-      href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}"
-      rel="stylesheet"
-    />
-    <link
-      href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}"
-      rel="stylesheet"
-    />
-     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/styles.css' %}">
-    <!-- Main CSS File -->
+    <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/styles.css' %}">
     <link href="{% static 'assets/css/main.css' %}" rel="stylesheet" />
 
+    <!-- jQuery (load before any scripts that use it) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     {% block style %}
-      
     {% endblock style %}
   </head>
 
@@ -75,13 +54,17 @@
             <li><a href="/">Order</a></li>
             <li><a href="/">Tracking</a></li>
             <li><a href="#footer">Contact</a></li>
+            
           </ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
 
     {% if request.user.is_authenticated %}
+
+        <button type="button" class="btn btn-dark mx-2" id="popcart" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+        Cart(<span id="cart">0</span>)</button>
         <a class="btn-getstarted" href="#">Welcome {{user.username}}</a>
-        <li><a class="btn-getstarted" href="/auth/logout">Logout</a></li>
+        <li><a class="btn-getstarted" href="/">GoBack</a></li>
         {% else %}
         <a class="btn-getstarted" href="/auth/login">SignIn</a>
         {% endif %}
@@ -324,7 +307,59 @@
     <!-- Preloader -->
     <div id="preloader"></div>
 
-    <!-- Vendor JS Files -->
+    <script>
+      $(document).ready(function() {
+        // Initialize or retrieve the cart from localStorage
+        let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+
+        updateCart(cart);
+
+        // Add or increment code for cart
+        $('.divpr').on('click', 'button.cart', function() {
+          let idstr = this.id.toString();
+
+          if (cart[idstr] != undefined) {
+            cart[idstr][0] += 1; // Increment quantity
+          } else {
+            let qty = 1;
+            let name = document.getElementById('name' + idstr).innerHTML;
+            let price = document.getElementById('price' + idstr).innerHTML;
+            cart[idstr] = [qty, name, price];
+          }
+          
+          updateCart(cart);
+
+          // Store updated cart in localStorage
+          localStorage.setItem('cart', JSON.stringify(cart));
+          document.getElementById('cart').innerHTML = Object.keys(cart).length;
+        });
+
+        // Initialize popover for the cart
+        $('#popcart').popover();
+        updatePopover(cart);
+
+        function updatePopover(cart) {
+          console.log('We are inside updatePopover');
+          let popStr = "<h5>Your shopping cart</h5><div class='mx-2 my-2'>";
+          let i = 1;
+
+          for (let item in cart) {
+            popStr += `<b>${i}.</b> ${document.getElementById('name' + item).innerHTML.slice(0, 19)}... <b>${cart[item][0]}</b> Qty</br>`;
+            i++;
+          }
+          
+          popStr += "</div> <a href='/checkout'><button class='btn btn-primary' id='clearCart'>Go to Cart</button></a>";
+          document.getElementById('popcart').setAttribute('data-content', popStr);
+          $('#popcart').popover('show');
+        }
+
+        function updateCart(cart) {
+          // Your code for updating the cart UI, if any
+        }
+      });
+    </script>
+
+    <!-- Remaining vendor scripts -->
     <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
     <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
@@ -333,8 +368,7 @@
     <script src="{% static 'assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
     <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
     <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-
+    
     <!-- Main JS File -->
     <script src="{% static 'assets/js/main.js' %}"></script>
   </body>
