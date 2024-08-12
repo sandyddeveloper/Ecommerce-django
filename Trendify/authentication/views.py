@@ -185,8 +185,58 @@ class SetNewPasswordView(View):
         
            
 
+def checkout(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Login is not authenticated")
+        return redirect('/auth/login')
+    if request.method == 'POST':
+        items_json = request.POST.get('itemsJson', '')
+        name = request.POST.get('name', '')
+        amount = request.POST.get('amount', '')
+        email = request.POST.get('email', '')
+        address1 = request.POST.get('address1', '')
+        address2 = request.POST.get('address2', '')
+        city = request.POST.get('city', '')
+        state = request.POST.get('state', '')
+        zipcode = request.POST.get('zipcode', '')
+        phone = request.POST.get('phone', '')
+        
+        Order = Order(items_json, name=name, amount=amount, email=email, address1=address1, address2=address2, city=city, state=state, zipcode=zipcode, phone=phone)
+        print(amount)
+        Order.save()
+        update = OrderUpdate(order_id=Order.order_id, update_desc='the order has been placed')
+        update.save()
+        thank = True
+        id = Order.order_id
+        oid = str(id)+"Trendify"
+        param_dict = {
+            'MID' : 'MID',
+            'ORDER_ID' : oid,
+            'TXN_AMOUNT' : str(amount),
+            'CUST_ID' : email,
+            'WEBSITE' : 'WEBSTAGING',
+            'CHANNEL_ID' : 'WEB',
+            'INDUSTRY_TYPE_ID' : 'Retail',
+            'CALLBACK_URL' : 'http://127.0.0.1:8000/handlerequest',
+        }
+        param_dict['CHECKSUMHASH'] =Checksum.generate_checksum(param_dict, MERCHANT_KEY)
+        return render(request, 'payment.html',{'param_dict':param_dict})
+    return render(request, 'checkout.html')
 
-
+# @csrf_exempt
+# def handlerequest(request):
+    
+#     # paytm will send you post request here to pay
+#     form = request.POST
+#     response_dict = {}
+#     for i in form.keys():
+#         response_dict[i] = form[i]
+#         if i == 'CUST_ID' or i == 'CHECKSUMHASH':
+#             checksum = form[i]
+            
+#     verify = Checksum.verify_checksum(response_dict,MERCHANT_KEY, checksum)
+#     if verify:
+#         if response_dict['RESPCODE'] == '01':
 
 
 

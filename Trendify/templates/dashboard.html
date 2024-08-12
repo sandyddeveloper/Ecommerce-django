@@ -169,18 +169,19 @@
       <div class="row">
         {% for i in product %}
           <div class="col-md-3 mt-3">
-            <div class="card product-card shadow-sm p-3 mb-5 bg-white rounded" data-aos="fade-up">
-              <img src="/media/{{ i.image }}" class="card-img-top img-fluid product-image" alt="{{ i.product_name }}" />
-              <div class="card-body text-center">
-                <h5 class="card-title" id="namepr{{ i.id }}">{{ i.product_name }}</h5>
-                <p class="card-text">{{ i.desc|slice:"0:50" }}...</p>
-                <h6 class="card-price">Price: <span id="pricepr{{ i.id }}" class="text-danger">{{ i.price }}</span></h6>
-                <div class="d-flex justify-content-center mt-3">
-                  <button id="pr{{ i.id }}" class="btn btn-success btn-sm mx-2 add-to-cart-btn">Add To Cart</button>
-                  <a href="/media/{{ i.image }}" class="btn btn-info btn-sm mx-2 view-btn">View</a>
-                </div>
+           <div class="card product-card shadow-sm p-3 mb-5 bg-white rounded" data-aos="fade-up">
+            <img src="/media/{{ i.image }}" class="card-img-top img-fluid product-image" alt="{{ i.product_name }}" />
+            <div class="card-body text-center">
+              <h5 class="card-title" id="namepr{{ i.id }}">{{ i.product_name }}</h5>
+              <p class="card-text">{{ i.desc|slice:"0:50" }}...</p>
+              <h6 class="card-price">Price: <span id="pricepr{{ i.id }}" class="text-danger">{{ i.price }}</span></h6>
+              <div id="divpr{{ i.id }}"></div> <!-- Add this div -->
+              <div class="d-flex justify-content-center mt-3">
+                <button id="pr{{ i.id }}" class="btn btn-success btn-sm mx-2 add-to-cart-btn">Add To Cart</button>
+                <a href="/media/{{ i.image }}" class="btn btn-info btn-sm mx-2 view-btn">View</a>
               </div>
             </div>
+          </div>
           </div>
         {% endfor %}
       </div>
@@ -307,57 +308,96 @@
     <!-- Preloader -->
     <div id="preloader"></div>
 
+    {% block script %}
     <script>
-      $(document).ready(function() {
-        // Initialize or retrieve the cart from localStorage
-        let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+   $(document).ready(function() {
+  let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
 
-        updateCart(cart);
+  updateCart(cart);
 
-        // Add or increment code for cart
-        $('.divpr').on('click', 'button.cart', function() {
-          let idstr = this.id.toString();
+  $('.add-to-cart-btn').on('click', function() {
+    let idstr = this.id.toString().substring(2);
 
-          if (cart[idstr] != undefined) {
-            cart[idstr][0] += 1; // Increment quantity
-          } else {
-            let qty = 1;
-            let name = document.getElementById('name' + idstr).innerHTML;
-            let price = document.getElementById('price' + idstr).innerHTML;
-            cart[idstr] = [qty, name, price];
-          }
-          
-          updateCart(cart);
+    if (cart[idstr] != undefined) {
+      cart[idstr][0] += 1;
+    } else {
+      let qty = 1;
+      let name = document.getElementById('namepr' + idstr).innerHTML;
+      let price = document.getElementById('pricepr' + idstr).innerHTML;
+      cart[idstr] = [qty, name, price];
+    }
+    
+    updateCart(cart);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = Object.keys(cart).length;
+  });
 
-          // Store updated cart in localStorage
-          localStorage.setItem('cart', JSON.stringify(cart));
-          document.getElementById('cart').innerHTML = Object.keys(cart).length;
-        });
+  function updateCart(cart) {
+    var sum = 0;
+    for (var item in cart) {
+      sum += cart[item][0];
+      
+      // Log the ID to ensure it is correct
+      console.log('Attempting to update element with ID:', 'divpr' + item);
+      
+      // Check if the element exists before setting its innerHTML
+      let divprElement = document.getElementById('divpr' + item);
+      if (divprElement) {
+        divprElement.innerHTML = `
+          <button id="minus${item}" class="btn btn-primary minus">-</button>
+          <span class="mx-2">${cart[item][0]}</span>
+          <button id="plus${item}" class="btn btn-primary plus">+</button>`;
+      } else {
+        console.error(`Element with ID divpr${item} not found`);
+      }
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = sum;
 
-        // Initialize popover for the cart
-        $('#popcart').popover();
-        updatePopover(cart);
+    addEventListeners();
+    updatePopover(cart);
+  }
 
-        function updatePopover(cart) {
-          console.log('We are inside updatePopover');
-          let popStr = "<h5>Your shopping cart</h5><div class='mx-2 my-2'>";
-          let i = 1;
+  function addEventListeners() {
+    $('.minus').on('click', function() {
+      let id = this.id.replace('minus', '');
+      if (cart[id] && cart[id][0] > 1) {
+        cart[id][0] -= 1;
+      } else {
+        delete cart[id];
+      }
+      updateCart(cart);
+    });
 
-          for (let item in cart) {
-            popStr += `<b>${i}.</b> ${document.getElementById('name' + item).innerHTML.slice(0, 19)}... <b>${cart[item][0]}</b> Qty</br>`;
-            i++;
-          }
-          
-          popStr += "</div> <a href='/checkout'><button class='btn btn-primary' id='clearCart'>Go to Cart</button></a>";
-          document.getElementById('popcart').setAttribute('data-content', popStr);
-          $('#popcart').popover('show');
-        }
+    $('.plus').on('click', function() {
+      let id = this.id.replace('plus', '');
+      if (cart[id]) {
+        cart[id][0] += 1;
+      } else {
+        console.error(`Cart item with ID ${id} does not exist.`);
+      }
+      updateCart(cart);
+    });
+  }
 
-        function updateCart(cart) {
-          // Your code for updating the cart UI, if any
-        }
-      });
+  function updatePopover(cart) {
+    let popStr = "<h5>Your shopping cart</h5><div class='mx-2 my-2'>";
+    let i = 1;
+
+    for (let item in cart) {
+      popStr += `<b>${i}.</b> ${cart[item][1].slice(0, 19)}... <b>${cart[item][0]}</b> Qty<br>`;
+      i++;
+    }
+
+    popStr += "</div> <a href='/checkout'><button class='btn btn-primary' id='clearCart'>Go to Cart</button></a>";
+    $('#popcart').attr('data-content', popStr).popover('show');
+  }
+
+  $('#popcart').popover();
+});
+
     </script>
+    {% endblock %}
 
     <!-- Remaining vendor scripts -->
     <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
