@@ -54,6 +54,8 @@ def signup(request):
     
     return render(request, 'auth/signup.html')
 
+def about_view(request):
+    return render(request, 'about.html')
 
 class ActivateAccountView(View):
     def get(self, request, uidb64, token):
@@ -87,19 +89,14 @@ def handlelogin(request):
         else:
             messages.warning(request, "Invalid credentials")
             return redirect('/auth/login')  
-    
-    return render(request, 'auth/login.html')
+    else:
+        return render(request, 'auth/login.html')
 
 
 def handlelogout(request):
     logout(request)
     messages.success(request, "Logged out successfully")
     return redirect('/')
-
-
-# def dashboard(request):
-#     products = Product.objects.all()
-#     return render(request, 'dashboard.html', {'products': products})
 
 
 def dashboard(request):
@@ -190,6 +187,9 @@ class SetNewPasswordView(View):
         
            
 
+def product_view(request, pk):
+    product = Product.objects.get(id=pk)
+    return render(request, 'product.html', {'product': product})
 
 
 
@@ -199,30 +199,3 @@ class SetNewPasswordView(View):
 
 
 
-
-
-# # from django.shortcuts import render, redirect
-# # from django.contrib.auth.models import User
-# # from django.contrib.auth import authenticate, login, logout
-# # from django.contrib import messages
-
-# # # to active the user by providing the mail to the user t verify their account
-# # from django.contrib.sites.shortcuts import get_current_site
-# # from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-# # from django.urls import NoReverseMatch, reverse
-# # from django.template.loader import render_to_string
-# # from django.utils.encoding import force_bytes,  DjangoUnicodeDecodeError
-
-# # #getting tokens from utils.py in auth folder
-# # from .utils import TokenGenerator
-
-# # # for sending emails to user for verifications
-# # from django.core.mail import send_mail,EmailMultiAlternatives
-# # from django.core.mail import BadHeaderError,send_mail
-# # from django.core.mail import EmailMessage
-
-# # #to send the "TO" address and from for mailing for users
-# # from django.conf import settings
-
-# #resetpassword generators
-# #from django.contrib.auth.tokens import PasswordResetTokenGenerator

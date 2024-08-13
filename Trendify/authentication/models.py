@@ -33,8 +33,9 @@ class Product(models.Model):
     pub_date = models.DateField()
     image = models.ImageField(upload_to='shop/images/', default="")
     #Add sales information
-    is_sale = models.BooleanField(default=False)
-    sale_price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+    is_offer = models.BooleanField(default=False)
+    offer_price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+    is_stock = models.BooleanField(default=False)
     def __str__(self):
         return self.name
     

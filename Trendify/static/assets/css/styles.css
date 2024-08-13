@@ -50,3 +50,6 @@
     background: linear-gradient(45deg, #138496, #17a2b8);
   }
  
+  footer {
+    margin-top: auto; /* Pushes the footer to the bottom */
+  }
