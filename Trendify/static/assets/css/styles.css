@@ -8,6 +8,11 @@
   }
 
   .product-image {
+    width: 100%; 
+    aspect-ratio: 16 / 9; 
+    object-fit: cover; 
+    object-position: center;
+    border-radius: 8px; 
     transition: transform 0.3s ease-in-out;
   }
 
@@ -51,3 +56,4 @@
   .view-btn:hover {
     background: linear-gradient(45deg, #138496, #17a2b8);
   }
+ 

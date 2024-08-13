@@ -18,6 +18,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
     
+    class  Meta:
+        verbose_name_plural = 'categories'
+    
     
 #All of our Products
 
@@ -29,7 +32,9 @@ class Product(models.Model):
     description = models.CharField(max_length=300, default='', blank=True, null=True)
     pub_date = models.DateField()
     image = models.ImageField(upload_to='shop/images/', default="")
-    
+    #Add sales information
+    is_sale = models.BooleanField(default=False)
+    sale_price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     def __str__(self):
         return self.name
     
