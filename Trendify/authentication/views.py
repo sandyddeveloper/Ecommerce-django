@@ -12,7 +12,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from .utils import token_generator, EmailThread
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from .models import Product
+from .models import Product,Category
 
 def signup(request):
     if request.method == 'POST':
@@ -191,9 +191,37 @@ def product_view(request, pk):
     product = Product.objects.get(id=pk)
     return render(request, 'product.html', {'product': product})
 
+def category(request,nun):
+    # Replace Hyphens with Space characters
+    nun = nun.replace('-',' ')
+    #Grab the category from the url
+    try:
+        #Look Up to Category
+        category = Category.objects.get(name = nun)
+        # Get all products in this category
+        products = Product.objects.filter(category=category)
+        # Render the products in this category
+        return render(request, 'category.html', {'products': products, 'category': category})
+        
+    except:
+        messages.success(request, "That's not a valid category")
+        return redirect('dashboard')
+    
+def cart_summary (request):
+    return render(request, 'cart_summary.html',{ })
 
 
 
+def cart_add (request):
+    pass
+
+
+def cart_delete (request):
+    pass
+
+
+def cart_update (request):
+    pass
 
 
 
