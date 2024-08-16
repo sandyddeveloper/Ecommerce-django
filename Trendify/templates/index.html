@@ -82,10 +82,10 @@
         {% if request.user.is_authenticated %}
 
         <a class="btn-getstarted" href="#">Welcome {{user.username}}</a>
-        <li><a class="btn-getstarted" href="/auth/logout">Logout</a></li>
-        <li><a class="btn-getstarted" href="/auth/dashboard">Dashboard</a></li>
+        <li><a class="btn-getstarted" href="{% url 'handlelogout' %}">Logout</a></li>
+        <li><a class="btn-getstarted" href="{% url 'dashboard'%}">Dashboard</a></li>
         {% else %}
-        <a class="btn-getstarted" href="/auth/signup">SignIn</a>
+        <a class="btn-getstarted "href="{% url 'signup' %}">Signup</a>
         {% endif %}
       </div>
     </header>

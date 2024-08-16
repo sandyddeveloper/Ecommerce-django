@@ -20,26 +20,33 @@ def Home (request):
 
 def signup(request):
     if request.method == 'POST':
-        firstName = request.POST['firstName']
-        lastName = request.POST['lastName']
-        password = request.POST['password']
-        email = request.POST['email']
-        confirmPassword = request.POST['confirmPassword']
-        
+        firstName = request.POST.get('firstName')
+        lastName = request.POST.get('lastName')
+        password = request.POST.get('password')
+        email = request.POST.get('email')
+        confirmPassword = request.POST.get('confirmPassword')
+
+        # Gather potential errors
+        errors = []
         if password != confirmPassword:
-            messages.warning(request, "Passwords do not match")
-            return render(request, 'auth/signup.html')
+            errors.append("Passwords do not match.")
         
         if User.objects.filter(username=email).exists():
-            messages.warning(request, "User already exists")
-            return render(request, 'auth/signup.html')
+            errors.append("User already exists.")
 
+        if errors:
+            for error in errors:
+                messages.warning(request, error)
+            return render(request, 'Auth/signup.html')
+
+        # Create the user if there are no errors
         myuser = User.objects.create_user(email, email, password)
         myuser.first_name = firstName
         myuser.last_name = lastName
         myuser.is_active = False  # Deactivate account until it is confirmed
         myuser.save()
-        
+
+        # Send activation email
         current_site = get_current_site(request)
         email_subject = "Activate Your Account"
         message = render_to_string('Auth/activate.html', {
@@ -48,15 +55,16 @@ def signup(request):
             'uid': urlsafe_base64_encode(force_bytes(myuser.pk)),
             'token': token_generator.make_token(myuser),
         })
-        
+
         email_message = EmailMessage(
             email_subject, message, settings.EMAIL_HOST_USER, [email]
         )
         EmailThread(email_message).start()
-        messages.info(request, "Activate your account by clicking the link sent to your email.") 
-        return redirect('/auth/login')  
-    
-    return render(request, 'auth/signup.html')
+        messages.info(request, "Activate your account by clicking the link sent to your email.")
+        return redirect('handlelogin')
+
+    return render(request, 'Auth/signup.html')
+
 
 def about_view(request):
     return render(request, 'about.html')
@@ -73,7 +81,7 @@ class ActivateAccountView(View):
             user.is_active = True
             user.save()
             messages.success(request, "Your account has been activated. You can now login.")
-            return redirect('/auth/login')
+            return redirect('handlelogin')
         else:
             messages.error(request, "Activation link is invalid!")
             return render(request, 'Auth/activatefail.html')
@@ -92,9 +100,9 @@ def handlelogin(request):
             return redirect('dashboard')  # Redirect to the dashboard
         else:
             messages.warning(request, "Invalid credentials")
-            return redirect('/auth/login')  
+            return redirect('handlelogin')  
     else:
-        return render(request, 'auth/login.html')
+        return render(request, 'Auth/login.html')
 
 
 def handlelogout(request):
@@ -163,7 +171,7 @@ class SetNewPasswordView(View):
         except DjangoUnicodeDecodeError as identifier:
             pass
         
-        return render(request,'Auth/set-new-password.html', context)
+        return render(request,'Auth/reset-new-password.html', context)
     
     def post(self, request, uidb64, token):
         context ={
@@ -175,7 +183,7 @@ class SetNewPasswordView(View):
         confirmPassword = request.POST['confirmPassword']
         if password!= confirmPassword:
             messages.warning(request, "Passwords do not match")
-            return render(request,'Auth/set-new-password.html', context)
+            return render(request,'Auth/reset-new-password.html', context)
         
         try:
             user_id = force_str(urlsafe_base64_decode(uidb64))
@@ -183,11 +191,11 @@ class SetNewPasswordView(View):
             user.set_password(password)
             user.save()
             messages.success(request, "Password successfully reset. Please log in with the new password")
-            return redirect('/auth/login')
+            return redirect('handlelogin')
         
         except DjangoUnicodeDecodeError as identifier:
             messages.error(request, "Something Went Wrong")
-            return render(request,'Auth/set-new-password.html', context)
+            return render(request,'Auth/reset-new-password.html', context)
         
            
 
