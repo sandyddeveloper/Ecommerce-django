@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
 from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
@@ -22,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-sr$rn3n$dilk4(f_9$4s#m(+-b=_67jwfke&9o2i9t!%o-xu1c'
+SECRET_KEY = 'django-insecure-%v5xr-w9miv3sc9n5+3gu#kg38$9tu&2(pv98uh*n5oq2z9bjt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api',
-    'authentication',
+    'Myapp',
+    'Cart',
 ]
 
 MIDDLEWARE = [
