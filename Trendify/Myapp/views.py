@@ -219,18 +219,3 @@ def category(request,nun):
         messages.success(request, "That's not a valid category")
         return redirect('dashboard')
     
-def cart_summary (request):
-    return render(request, 'cart_summary.html',{ })
-
-
-
-def cart_add (request):
-    pass
-
-
-def cart_delete (request):
-    pass
-
-
-def cart_update (request):
-    pass

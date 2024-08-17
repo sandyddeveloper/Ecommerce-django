@@ -44,7 +44,7 @@
 
     <!-- Main CSS File -->
     <link href="{% static 'assets/css/main.css' %}" rel="stylesheet" />
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     {% block style %}{% endblock style %}
   </head>
 
@@ -70,7 +70,7 @@
             <li><a href="#services">Services</a></li>
             <li><a href="#portfolio">Categories</a></li>
             <li><a href="#contact">Contact</a></li>
-            <li><a href="/auth/logout">Logout</a></li>
+            <li><a href="{% url 'handlelogout' %}">Logout</a></li>
           </ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
@@ -78,12 +78,11 @@
         
     {% if request.user.is_authenticated %}
 
-        <button type="button" class="btn btn-dark mx-2" id="popcart" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
-        Cart(<span id="cart">0</span>)</button>
         <a class="btn-getstarted" href="#">Welcome {{user.username}}</a>
         <li><a class="btn-getstarted" href="/">GoBack</a></li>
         {% else %}
-        <a class="btn-getstarted" href="/auth/login">SignIn</a>
+        <a class="btn-getstarted" href="{% url 'handlelogin' %}">Log-In</a>
+
         {% endif %}
       </div>
     </header>
