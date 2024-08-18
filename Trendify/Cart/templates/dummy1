@@ -52,29 +52,33 @@
     </center>
 
     <script>
-      $(document).ready(function() {
-          // Check if the add-to-cart button is clicked
-          $(document).on('click', '.add-cart', function(e) {
-              e.preventDefault();
-              var product_id = $(this).val(); // Get the product ID from the clicked button's value
-              
-              $.ajax({
-                  type: 'POST',
-                  url: '{% url "cart_add" %}',  // Make sure this URL is correct
-                  data: {
-                      product_id: product_id,
-                      csrfmiddlewaretoken: '{{ csrf_token }}',
-                      action: 'post'
-                  },
-                  success: function(json) {
-                      var cartQuantityElement = document.getElementById("cart_quantity");
-                      if (cartQuantityElement) {
-                          cartQuantityElement.textContent = json.qty;
+      // Ensure the DOM is fully loaded before executing the script
+      document.addEventListener('DOMContentLoaded', function () {
+          const addCartButtons = document.querySelectorAll('.add-cart');
+          
+          addCartButtons.forEach(function(button) {
+              button.addEventListener('click', function (e) {
+                  e.preventDefault();
+                  const productId = e.target.value;
+
+                  $.ajax({
+                      type: 'POST',
+                      url: '{% url "cart_add" %}',  // Make sure this URL is correct
+                      data: {
+                          product_id: productId,
+                          csrfmiddlewaretoken: '{{ csrf_token }}',
+                          action: 'post'
+                      },
+                      success: function(json) {
+                          const cartQuantityElement = document.getElementById("cart_quantity");
+                          if (cartQuantityElement) {
+                              cartQuantityElement.textContent = json.qty;
+                          }
+                      },
+                      error: function(xhr, errmsg, err) {
+                          console.log(xhr.responseText);
                       }
-                  },
-                  error: function(xhr, errmsg, err) {
-                      console.log(xhr.responseText);
-                  }
+                  });
               });
           });
       });

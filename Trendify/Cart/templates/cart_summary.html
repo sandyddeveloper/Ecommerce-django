@@ -44,6 +44,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <!-- Main CSS File -->
     <link href="{% static 'assets/css/main.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/css/cartsummary.css' %}" rel="stylesheet" />
   </head>
 
   <body class="starter-page-page">
@@ -77,103 +78,47 @@
     </header>
 
     <main class="main">
-          <section class="vh-100" style="background-color: #fdccbc">
-            <div class="container h-100">
-              <div
-                class="row d-flex justify-content-center align-items-center h-100"
-              >
-                <div class="col">
-                  <p>
-                    <span class="h2">Shopping Cart </span
-                    ><span class="h4">(1 item in your cart)</span>
-                  </p>
-
-                  <div class="card mb-4">
-                    <div class="card-body p-4">
-                      <div class="row align-items-center">
-                        <div class="col-md-2">
-                          <img
-                            src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/1.webp"
-                            class="img-fluid"
-                            alt="Generic placeholder image"
-                          />
-                        </div>
-                        <div class="col-md-2 d-flex justify-content-center">
-                          <div>
-                            <p class="small text-muted mb-4 pb-2">Name</p>
-                            <p class="lead fw-normal mb-0">iPad Air</p>
-                          </div>
-                        </div>
-                        <div class="col-md-2 d-flex justify-content-center">
-                          <div>
-                            <p class="small text-muted mb-4 pb-2">Color</p>
-                            <p class="lead fw-normal mb-0">
-                              <i
-                                class="fas fa-circle me-2"
-                                style="color: #fdd8d2"
-                              ></i>
-                              pink rose
-                            </p>
-                          </div>
-                        </div>
-                        <div class="col-md-2 d-flex justify-content-center">
-                          <div>
-                            <p class="small text-muted mb-4 pb-2">Quantity</p>
-                            <p class="lead fw-normal mb-0">1</p>
-                          </div>
-                        </div>
-                        <div class="col-md-2 d-flex justify-content-center">
-                          <div>
-                            <p class="small text-muted mb-4 pb-2">Price</p>
-                            <p class="lead fw-normal mb-0">$799</p>
-                          </div>
-                        </div>
-                        <div class="col-md-2 d-flex justify-content-center">
-                          <div>
-                            <p class="small text-muted mb-4 pb-2">Total</p>
-                            <p class="lead fw-normal mb-0">$799</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="card mb-5">
-                    <div class="card-body p-4">
-                      <div class="float-end">
-                        <p class="mb-0 me-5 d-flex align-items-center">
-                          <span class="small text-muted me-2"
-                            >Order total:</span
-                          >
-                          <span class="lead fw-normal">$799</span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="d-flex justify-content-end">
-                    <button
-                      type="button"
-                      data-mdb-button-init
-                      data-mdb-ripple-init
-                      class="btn btn-light btn-lg me-2"
-                    >
-                      Continue shopping
-                    </button>
-                    <button
-                      type="button"
-                      data-mdb-button-init
-                      data-mdb-ripple-init
-                      class="btn btn-primary btn-lg"
-                    >
-                      Add to cart
-                    </button>
-                  </div>
-                </div>
-              </div>
+    {% if cart_products %}
+    {% for product in cart_products %}
+      <center>
+      <div class="card mb-3">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="Product Image">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text">{{ product.description }}</p>
+              
+              {% if not product.is_offer %}
+                <h6 class="card-price">Price: <span id="pricepr{{ product.id }}" class="text-danger">{{ product.price }}</span></h6>
+              {% else %}
+                <strike>
+                  <h6 class="card-price">Price: <span id="pricepr{{ product.id }}" class="text-danger">{{ product.price }}</span></h6>
+                </strike>
+                <h6 class="card-sale-price text-danger">Offer Price: <span>{{ product.offer_price }}</span></h6>
+              {% endif %}
+              
+              {% if not product.is_stock %}
+                <p class="card-stock text-danger">Out of Stock</p>
+              {% else %}
+                <p class="card-stock text-success">In Stock</p>
+              {% endif %}
+              
+              <p>ID: <strong>{{ product.id }}</strong></p>
+              <a class="btn btn-secondary" href="/dashboard">Home</a>
+              <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
             </div>
-          </section>
-      <!-- /Starter Section Section -->
+          </div>
+        </div>
+      </div>
+    </center>
+    {% endfor %}
+    {%else%}
+    There are no products available in Your Cart
+    </br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
+    {% endif %}
     </main>
 
     <footer id="footer" class="footer dark-background">
@@ -277,22 +222,12 @@
         <div class="row align-items-center justify-content-between">
           <div class="col-lg-6 text-lg-start text-center">
             <p>
-              &copy; 2024 <strong><span>Gp</span></strong
+              &copy; 2024 <strong><span>Trendify</span></strong
               >. All Rights Reserved
             </p>
             <p>
-              Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+              Designed by <a href="https://bootstrapmade.com/">Santhosh Raj</a>
             </p>
-          </div>
-          <div class="col-lg-6 text-lg-end text-center">
-            <nav class="footer-links d-flex justify-content-center">
-              <a href="#hero">Home</a>
-              <a href="#about">About</a>
-              <a href="#services">Services</a>
-              <a href="#portfolio">Portfolio</a>
-              <a href="#team">Team</a>
-              <a href="#contact">Contact</a>
-            </nav>
           </div>
         </div>
       </div>
