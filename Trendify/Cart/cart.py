@@ -31,3 +31,6 @@ class Cart():
         
     def __len__(self):
         return len(self.cart)
+    
+    def get_prods(self):
+        product_ids = self.cart.keys()

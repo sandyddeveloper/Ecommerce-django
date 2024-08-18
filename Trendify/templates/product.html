@@ -53,25 +53,28 @@
     <script>
       // Check if the add-to-cart button is clicked
       $(document).on('click', '.add-cart', function(e) {
-        e.preventDefault();
-        var product_id = $(this).val();  // Get the product ID from the button's value
-        $.ajax({
-          type: 'POST',
-          url: '{% url "cart_add" %}',  // Ensure the correct URL name is used
-          data: {
+    e.preventDefault();
+    var product_id = $(this).val(); // Get the product ID from the clicked button's value
+    $.ajax({
+        type: 'POST',
+        url: '{% url "cart_add" %}',  // Make sure this URL is correct
+        data: {
             product_id: product_id,
-            csrfmiddlewaretoken: '{{ csrf_token }}',  // Reference the CSRF token correctly
+            csrfmiddlewaretoken: '{{ csrf_token }}',
             action: 'post'
-          },
-          success: function(json) {
-           // console.log(json);
-           document.getElementById("cart_quantity").textContent = json.qty
-          },
-          error: function(xhr, errmsg, err) {
+        },
+       success: function(json) {
+    var cartQuantityElement = document.getElementById("cart_quantity");
+    if (cartQuantityElement) {
+        cartQuantityElement.textContent = json.qty;
+    }
+},
+
+        error: function(xhr, errmsg, err) {
             console.log(xhr.responseText);
-          }
-        });
-      });
+        }
+    });
+});
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
