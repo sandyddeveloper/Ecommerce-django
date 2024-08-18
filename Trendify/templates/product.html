@@ -40,7 +40,20 @@
               {% else %}
                 <p class="card-stock text-success">In Stock</p>
               {% endif %}
-              
+              <br/>
+              <div class="row  justify-content-center">
+              <div class="col-md-2">Qunatity:</div>
+              <div class="col-md-2">
+              <select class="form-select form-select-sm" id="qty-cart">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="3">4</option>
+                <option value="3">5</option>
+              </select>
+              </div>
+              </div>
+              <br/>
               <p>ID: <strong>{{ product.id }}</strong></p>
               <a class="btn btn-secondary" href="/dashboard">Home</a>
               <button type="button" value="{{ product.id }}" class="btn btn-secondary add-cart" id="add-cart-{{ product.id }}">Add to Cart</button>
@@ -57,12 +70,13 @@
           $(document).on('click', '.add-cart', function(e) {
               e.preventDefault();
               var product_id = $(this).val(); // Get the product ID from the clicked button's value
-              
+              var product_qty = $(this).text();
               $.ajax({
                   type: 'POST',
                   url: '{% url "cart_add" %}',  // Make sure this URL is correct
                   data: {
                       product_id: product_id,
+                      product_qty: product_qty,  // Get the quantity value from the select dropdown
                       csrfmiddlewaretoken: '{{ csrf_token }}',
                       action: 'post'
                   },
