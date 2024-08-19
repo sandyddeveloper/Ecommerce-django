@@ -14,16 +14,17 @@ class Cart():
         #lets make sure that cart is available on all the pages of application
         self.cart = cart
         
-    def add(self, product):
+    def add(self, product, quantity):
         product_id = str(product.id)
-        
+        product_qty = str(quantity)
         #Logic
         if product_id in self.cart:
             pass
         else:
-            self.cart[product_id] = {
-                'price': str(product.price),
-            }
+            # self.cart[product_id] = {
+            #     'price': str(product.price),
+            # }
+            self.cart[product_id] =  int (product_qty)
             
         self.session.modified = True
         
@@ -37,3 +38,27 @@ class Cart():
         products = Product.objects.filter(id__in = product_ids) # Here __in menas checking the django ORM whether it persent or not
         # Return products
         return products
+    
+    def get_quants(self):
+        quantities = self.cart
+        return quantities
+    
+    def update(self,  product, quantity):
+        product_id = str(product)
+        product_qty = int(quantity)
+        #the explaination of above function id  { '4': 3}
+        #Get the Cart
+        ourcart = self.cart
+        
+        #Lets update the Dictionary/cart
+        ourcart[product_id] = product_qty
+        
+        #Update the session
+        self.session['cart'] = ourcart
+        
+        #Mark the session as modified
+        self.session.modified = True
+        
+        allproducts = self.cart
+        return allproducts
+        

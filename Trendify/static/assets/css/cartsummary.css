@@ -13,3 +13,13 @@
     font-size: 1.2em;
     color: #555;
   }
+
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    border: none;
+  }

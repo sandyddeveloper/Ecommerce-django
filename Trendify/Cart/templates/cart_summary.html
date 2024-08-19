@@ -42,6 +42,8 @@
       rel="stylesheet"
     />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+
     <!-- Main CSS File -->
     <link href="{% static 'assets/css/main.css' %}" rel="stylesheet" />
     <link href="{% static 'assets/css/cartsummary.css' %}" rel="stylesheet" />
@@ -105,9 +107,29 @@
               {% else %}
                 <p class="card-stock text-success">In Stock</p>
               {% endif %}
-              
+              <div class="row  justify-content-center">
+              <div class="col-md-2">Qunatity:</div>
+              <div class="col-md-2">
+            <select class="form-select form-select-sm" id="select{{product.id}}">
+                
+                    {% for key, value in quantities.items %}
+                        {% if key == product.id|slugify %}
+                       <option selected> {{ value }}</option>
+                        {% endif %}
+                    {% endfor %}
+                
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+              </div>
+              </div>
+              </div>
               <p>ID: <strong>{{ product.id }}</strong></p>
               <a class="btn btn-secondary" href="/dashboard">Home</a>
+              <button type="button" class="btn btn-primary update-cart" data-index="{{product.id}}">Save</button>
               <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
             </div>
           </div>
@@ -233,7 +255,7 @@
       </div>
     </footer>
     <!-- End Footer -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
@@ -245,5 +267,31 @@
 
     <!-- Main JS File -->
     <script src="{% static 'assets/js/main.js' %}"></script>
+    <script>
+      $(document).ready(function () {
+        $('.update-cart').click(function (e) {
+          e.preventDefault();
+
+          var productID = $(this).data('index');
+          var selectedQty = $('#select' + productID).val();
+          $.ajax({
+            type: 'POST',
+            url: '/cart/update/',
+            data: {
+              product_id: productID,
+              quantity: selectedQty,
+              csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function (response) {
+              alert('Cart updated successfully!');
+            },
+            error: function (error) {
+              alert('There was an error updating the cart.');
+            },
+          });
+        });
+      });
+    </script>
+  
   </body>
 </html>
