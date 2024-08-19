@@ -3,6 +3,8 @@ from .cart import Cart
 from Myapp.models import Product
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from django.contrib import messages
+
 
 
 # Create your views here.
@@ -40,10 +42,20 @@ def cart_add (request):
         
    
 
+# Ensure you have the Product model imported
 
-def cart_delete (request):
-    pass
+def cart_delete(request):
+    cart = Cart(request)
+    if request.method == 'POST' and request.POST.get('action') == 'post':
+        product_id = request.POST.get('product_id')
+        cart.delete(product=product_id)
+        response = JsonResponse({'product': product_id})
+        messages.success(request, "Item Deleted From Shopping Cart...")
+        return response
+    return JsonResponse({'error': 'Invalid request'}, status=40)
 
+
+      
 
 def cart_update (request):
     cart = Cart(request)
@@ -64,3 +76,5 @@ def cart_update (request):
         
         return response
     return redirect("cart_summary")
+
+
