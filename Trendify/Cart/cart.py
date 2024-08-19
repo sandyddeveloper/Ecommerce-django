@@ -28,6 +28,31 @@ class Cart():
             
         self.session.modified = True
         
+    def total(self):
+        # Get product IDs from the cart
+        product_ids = self.cart.keys()
+        # Lookup the products in the Product model
+        products = Product.objects.filter(id__in=product_ids)
+        # Get the quantities from the cart
+        quantities = self.cart
+        # Initialize total
+        total = 0
+        for key, value in quantities.items():
+            # Convert key to int for comparison
+            key = int(key)
+            for product in products:
+                if product.id == key:
+                    if product.is_offer:
+                        # Use offer price if applicable
+                        total += product.offer_price * value
+                    else:
+                        # Otherwise, use the regular price
+                        total += product.price * value
+        return total
+        # returns {'4': 3} product ID and value of the product
+        
+       
+        
     def __len__(self):
         return len(self.cart)
     
@@ -69,5 +94,6 @@ class Cart():
             del self.cart[product_id]
 
         self.session.modified = True
+        
 
         

@@ -96,7 +96,7 @@
         <br/>
         <p class="card-text justified">{{ product.description }}</p>
         
-        {% if product.is_sale %}
+        {% if product.is_offer %}
         <div class="d-flex justify-content-center small text-warning mb-2">
                 <div class="bi-star-fill"></div>
                 &nbsp;&nbsp;Sale!&nbsp;&nbsp;
@@ -108,7 +108,7 @@
                 ${{ product.price }}
                 </strike>
                 &nbsp;
-                ${{ product.sale_price }}
+                ${{ product.offer_price }}
 
 
 
@@ -118,8 +118,8 @@
         {% endif %}
             <br/><br/>
         <div class="row justify-content-center">
-        <p>CSRF Token: {{ csrf_token }}</p>
-      <p>Delete URL: {% url 'cart_delete' %}</p>
+        {% comment %} <p>CSRF Token: {{ csrf_token }}</p>
+      <p>Delete URL: {% url 'cart_delete' %}</p> {% endcomment %}
 
     <div class="col-md-2">Quantity:</div>
                 <div class="col-md-2">
@@ -155,6 +155,9 @@
 
 
         	{% endfor %}
+              <div align="right">
+            <h3>Total: ${{ totals }}</h3>
+            <a href="#" class="btn btn-success">Checkout</a>
         	{% else %}
         	There's Nothing In Your Cart...
         	<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
