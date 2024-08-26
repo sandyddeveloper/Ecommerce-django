@@ -219,3 +219,5 @@ def category(request,nun):
         messages.success(request, "That's not a valid category")
         return redirect('dashboard')
     
+def update_user(request):
+    return render(request, 'update_user.html')
